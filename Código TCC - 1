@@ -1,0 +1,50 @@
+#include <SimpleModbusSlave.h>
+#define LED 33
+// Pinos para os sensores
+#define SENSOR1 32
+
+ enum
+{
+  
+ESTADO_LED,
+
+ESTADO_SENSOR1,
+
+HOLDING_REGS_SIZE
+ 
+};
+ 
+unsigned int holdingRegs[HOLDING_REGS_SIZE];
+
+void setup()
+{
+
+modbus_configure(&Serial, 9600, SERIAL_8N1, 1, 2, HOLDING_REGS_SIZE, holdingRegs);
+modbus_update_comms(9600, SERIAL_8N1, 1);
+ 
+pinMode(LED, OUTPUT);
+ 
+pinMode(SENSOR1, INPUT);
+
+
+ digitalWrite(LED, LOW);
+}
+
+void loop()
+{
+modbus_update();
+ 
+ 
+digitalWrite(LED, holdingRegs[ESTADO_LED]);
+  
+holdingRegs[ESTADO_SENSOR1] = digitalRead(SENSOR1);
+
+holdingRegs[ESTADO_LED] = digitalRead(LED);
+ 
+if (digitalRead(SENSOR1) == LOW){ //SE A LEITURA DO PINO FOR IGUAL A LOW, FAZ
+        digitalWrite(LED, HIGH); //ACENDE O LED
+  }else{//SENÃO, FAZ
+        digitalWrite(LED, LOW); //APAGA O LED
+  }    
+ 
+}
